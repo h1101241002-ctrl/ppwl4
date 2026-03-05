@@ -1,4 +1,4 @@
-import { Elysia } from "elysia"
+import { Elysia,t } from "elysia"
 import { openapi } from "@elysiajs/openapi";
 
 
@@ -56,13 +56,13 @@ app.get(
 );
 
 // handler harus diletakkan sebelum route
-app.onAfterHandle(({response }) => {
- return {
-   success: true,
-   Message: "data tersedia",
-   data: response
- }
-})
+// app.onAfterHandle(({response }) => {
+//  return {
+//    success: true,
+//    Message: "data tersedia",
+//    data: response
+//  }
+// })
 
 app.get("/profile", 
     () => ({
@@ -76,6 +76,39 @@ app.get(
         name: "Laptop"
     }))
 
+app.onError(({ code, set }) => {
+ if (code === "VALIDATION") {
+   set.status = 400
+   return {
+     success: false,
+     error: "Validation Error"
+   }
+ }
+
+ if (code === "NOT_FOUND") {
+   set.status = 404
+   return {
+     message: "Route not found"
+   }
+ }
+
+ set.status = 500
+ return {
+   message: "Internal Server Error"
+ }
+})
+
+
+app.post(
+  "/login",
+  ({ body }) => body,
+  {
+    body: t.Object({
+      email: t.String({ format: "email" }),
+      password: t.String({ minLength: 8 })
+    })
+  }
+)
 
 app.listen(3000)
 console.log("Server running at http://localhost:3000")
