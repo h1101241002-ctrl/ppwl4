@@ -55,5 +55,27 @@ app.get(
   }
 );
 
+// handler harus diletakkan sebelum route
+app.onAfterHandle(({response }) => {
+ return {
+   success: true,
+   Message: "data tersedia",
+   data: response
+ }
+})
+
+app.get("/profile", 
+    () => ({
+ name: "Nayla Zakiyah Andani"
+}))
+
+app.get(
+    "/product",
+    ()=>({
+        id:1, 
+        name: "Laptop"
+    }))
+
+
 app.listen(3000)
 console.log("Server running at http://localhost:3000")
