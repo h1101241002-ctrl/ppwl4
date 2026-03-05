@@ -18,7 +18,7 @@ const app = new Elysia()
       })
     }
   )
-  .listen(3000);
+  
 
 app.get(
   "/user/:id",
@@ -41,5 +41,51 @@ app.get(
   }
 )
 
+app.get(
+  "/products/:id",
+  ({params, query}) => {
+    return{
+      id: params.id,
+      sort:query.sort,
+      name:query.name,
+      status: "success"
+    }
+  },
+  {
+    params: t.Object({
+      id:t.Numeric()
+    }),
+    query:t.Object({
+      sort:t.Union([
+        t.Literal("asc"),
+        t.Literal("desc")
+      ]),
+      name: t.String()
+    }),
+    response:t.Object({
+      id:t.Number(),
+      sort:t.String(),
+      name:t.String(),
+      status:t.String()
+    })
+  }
+)
 
+app.get(
+  "/ping",
+  () => {
+    return {
+      success: true,
+      message: "Server OK"
+    }
+  },
+  {
+    response: t.Object({
+      success: t.Boolean(),
+      message: t.String()
+    })
+  }
+)
+
+.listen(3000);
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
